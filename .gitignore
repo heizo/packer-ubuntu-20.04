@@ -1,0 +1,18 @@
+# Cache objects
+packer_cache/
+
+# ISO image
+iso/
+
+# For built boxes
+*.box
+box/
+output-*/
+
+#
+node_modules/
+
+#
+*~
+.DS_Store
+.vscode/
