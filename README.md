@@ -10,7 +10,7 @@ packer build ubuntu.json
 ```
 To create Hyper-V virtual machine.
 ```sh
-    packer build ubuntu-hyperv.json
+packer build ubuntu-hyperv.json
 ```
 
 ### Ubuntu Server 20.04.1

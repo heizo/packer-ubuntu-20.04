@@ -82,7 +82,7 @@
       "scripts": [
           "script/update.sh",
           "script/vagrant.sh",
-          "script/hyper-v.sh",
+          "script/hyperv.sh",
           "script/motd.sh",
           "script/minimize.sh",
           "script/cleanup.sh"
