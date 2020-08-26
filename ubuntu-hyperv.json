@@ -1,0 +1,98 @@
+{
+  "_comment": "Build with `packer build ubuntu-hyperv.json`",
+  "variables": {
+      "cpus": "1",
+      "disable_ipv6": "true",
+      "disk_size": "65536",
+      "headless": "true",
+      "hostname": "focal64",
+      "http_proxy": "{{env `http_proxy`}}",
+      "https_proxy": "{{env `https_proxy`}}",
+      "iso_checksum": "f11bda2f2caed8f420802b59f382c25160b114ccc665dbac9c5046e7fceaced2",
+      "iso_checksum_type": "sha256",
+      "iso_name": "ubuntu-20.04.1-legacy-server-amd64.iso",
+      "iso_path": "iso",
+      "iso_url": "http://cdimage.ubuntu.com/ubuntu-legacy-server/releases/20.04/release/ubuntu-20.04.1-legacy-server-amd64.iso",
+      "memory": "4096",
+      "no_proxy": "{{env `no_proxy`}}",
+      "preseed": "preseed-hyperv.cfg",
+      "ssh_fullname": "vagrant",
+      "ssh_password": "vagrant",
+      "ssh_username": "vagrant",
+      "switch_name": "Default Switch",
+      "update": "false",
+      "vagrantfile_template": "",
+      "version": "0.1",
+      "vm_name": "ubuntu-20.04"
+  },
+  "builders": [{
+      "boot_command": [
+          "<esc><esc><enter><wait>",
+          "linux /install/vmlinuz",
+          " auto=true",
+          " priority=critical",
+          " hostname={{user `hostname`}}",
+          " passwd/user-fullname={{user `ssh_fullname`}}",
+          " passwd/username={{user `ssh_username`}}",
+          " passwd/user-password={{user `ssh_password`}}",
+          " passwd/user-password-again={{user `ssh_password`}}",
+          " preseed/url=http://{{.HTTPIP}}:{{.HTTPPort}}/{{user `preseed`}}",
+          " mirror/http/proxy={{user `http_proxy`}}",
+          " no_proxy={{.HTTPIP}}",
+          "<enter>",
+          "initrd /install/initrd.gz<enter>",
+          "boot<enter>"
+      ],
+      "boot_wait": "5s",
+      "cpus": "{{user `cpus`}}",
+      "disk_size": "{{user `disk_size`}}",
+      "enable_dynamic_memory": false,
+      "enable_secure_boot": false,
+      "generation": 2,
+      "headless": "{{user `headless`}}",
+      "http_directory": "http",
+      "iso_checksum": "{{user `iso_checksum_type`}}:{{user `iso_checksum`}}",
+      "iso_urls": [
+          "{{user `iso_path`}}/{{user `iso_name`}}",
+          "{{user `iso_url`}}"
+      ],
+      "memory": "{{user `memory`}}",
+      "output_directory": "output-{{user `vm_name`}}-hyperv-iso",
+      "shutdown_command": "echo '{{user `ssh_password`}}'|sudo -S shutdown -P now",
+      "ssh_password": "{{user `ssh_password`}}",
+      "ssh_username": "{{user `ssh_username`}}",
+      "ssh_timeout": "1h",
+      "switch_name": "{{user `switch_name`}}",
+      "type": "hyperv-iso",
+      "vm_name": "{{user `vm_name`}}"
+  }],
+  "provisioners": [{
+      "environment_vars": [
+          "DEBIAN_FRONTEND=noninteractive",
+          "UPDATE={{user `update`}}",
+          "DISABLE_IPV6={{user `disable_ipv6`}}",
+          "SSH_USERNAME={{user `ssh_username`}}",
+          "SSH_PASSWORD={{user `ssh_password`}}",
+          "http_proxy={{user `http_proxy`}}",
+          "https_proxy={{user `https_proxy`}}",
+          "no_proxy={{user `no_proxy`}}"
+      ],
+      "execute_command": "echo '{{user `ssh_password`}}'|{{.Vars}} sudo -E -S bash '{{.Path}}'",
+      "expect_disconnect": true,
+      "scripts": [
+          "script/update.sh",
+          "script/vagrant.sh",
+          "script/hyper-v.sh",
+          "script/motd.sh",
+          "script/minimize.sh",
+          "script/cleanup.sh"
+      ],
+      "type": "shell"
+  }],
+  "post-processors": [{
+      "keep_input_artifact": false,
+      "output": "box/{{.Provider}}/{{user `vm_name`}}-{{user `version`}}.box",
+      "type": "vagrant",
+      "vagrantfile_template": "{{user `vagrantfile_template`}}"
+  }]
+}
