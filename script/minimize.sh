@@ -29,8 +29,8 @@ apt-get -y autoremove --purge
 # Clean up orphaned packages with deborphan
 apt-get -y install --no-install-recommends deborphan
 deborphan --find-config | xargs apt-get -y purge
-while [ -n "$(deborphan)" ]; do
-    deborphan | xargs apt-get -y purge
+while [ -n "$(deborphan --guess-all)" ]; do
+    deborphan --guess-all | xargs apt-get -y purge
 done
 apt-get -y purge deborphan
 
