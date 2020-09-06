@@ -20,7 +20,7 @@
       "ssh_password": "vagrant",
       "ssh_username": "vagrant",
       "switch_name": "Default Switch",
-      "update": "false",
+      "update": "true",
       "vagrantfile_template": "",
       "version": "0.1",
       "vm_name": "ubuntu-20.04"
